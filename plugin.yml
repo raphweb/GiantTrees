@@ -1,0 +1,27 @@
+name: GiantTrees
+main: com.ryanmichela.trees.TreePlugin
+author: Ryan Michela / EvModder
+description: Grows enormous trees.
+softdepend: [WorldEdit]
+api-version: 1.13
+version: 2.0
+
+commands:
+   tree-edit:
+      description: Opens the giant tree editor. Can only be called from the server console.
+      usage: /tree-edit <species>
+      permission: gianttrees.create
+
+   tree-create:
+      description: Creates a giant tree.
+      usage: /tree-create <species>
+      permission: gianttrees.create
+
+permissions:
+   gianttrees.create:
+      description: Allows the creation of a giant tree using the tree-create command.
+      default: op
+
+   gianttrees.grow:
+      description: Allows a player to grow a giant tree by fertilizing a grid of saplings.
+      default: true

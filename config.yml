@@ -1,0 +1,37 @@
+# By default, Giant Trees only creates trees when you ask it to. To enable automatic
+# generation of trees in your world as new chunks are generated, set naturallyGrowTrees to true
+
+naturallyGrowTrees: true
+treeGrowthPercentChance: 0.5
+
+# The worlds list below is only used when naturallyGrowTrees is set to true
+worlds:
+   - world
+
+# The planting pattern is used to grow giant trees in survival mode using collected resources.
+planting-pattern:
+    # Each row in the pattern represents one row of blocks placed horizontally on the ground.
+    # Each unique character in the pattern represents one material. Spaces mean don't care.
+    # All rows must be the same length.
+    pattern:
+        - SSSSS
+        - SSSSS
+        - SSESS
+        - SSSSS
+        - SSSSS
+    # Each unique character in the pattern must have one material mapping.
+    # The pattern must contain at least one sapling.
+    materials:
+        S: SAPLING
+        E: EMERALD_BLOCK
+    # Fertilizing the tree consumes some number of bone meal.
+    bone-meal-consumed: 64
+
+# Giant trees can possibly smother players if they don't get out of the way.
+# How many seconds should Giant Trees wait before adding a tree to the world?
+generation-delay: 3
+
+# Only change the settings below if you are having lag problems
+BLOCKS_PER_TICK: 2500       # The number of blocks to modify in a single tick
+TICK_DELAY: 1               # The delay in ticks between block modification actions
+SIMPLE_LIGHTING: false      # Disables the second lighting pass
