@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/Nate/Dropbox/Minecraft/Development/Libraries/bukkit.jar" sourcepath="/LightStrands/C:/Users/Nate/Dropbox/Minecraft/Plugins/Spigot-API-master">
+	<classpathentry kind="lib" path="lib/bukkit-1.15.2-shaded.jar" sourcepath="lib/bukkit-1.15.2-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/bukkit/"/>
+			<attribute name="javadoc_location" value="jar:platform:/resource/GiantTrees/lib/bukkit-1.15.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/Nate/Dropbox/Minecraft/Development/Libraries/WorldEdit.jar"/>
+	<classpathentry kind="lib" path="lib/worldedit-bukkit-7.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
