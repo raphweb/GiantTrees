@@ -42,7 +42,7 @@ public class TreePopulator extends BlockPopulator{
 		final Location refPoint = new Location(world, (chunk.getX() * 16) + random.nextInt(16), 64, (chunk.getZ() * 16) + random.nextInt(16));
 		refPoint.setY(getHighestSoil(world.getHighestBlockAt(refPoint)));
 
-		final Biome biome = simplifyBiome(world.getBiome(refPoint.getBlockX(), refPoint.getBlockZ()));
+		final Biome biome = simplifyBiome(world.getBiome(refPoint.getBlockX(), refPoint.getBlockY(), refPoint.getBlockZ()));
 		if(isAcceptableBiome(biome) && treeCanGrow(random)) {
 			final String treeType = biome.name();
 
