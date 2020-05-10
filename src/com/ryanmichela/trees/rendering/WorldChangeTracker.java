@@ -19,14 +19,19 @@ package com.ryanmichela.trees.rendering;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import com.ryanmichela.trees.history.WorldEditHistoryTracker;
@@ -34,33 +39,30 @@ import com.ryanmichela.trees.history.WorldEditHistoryTracker;
 public class WorldChangeTracker{
 
 	private class Changer implements Runnable{
-		private final WorldChange[] changes;
-		private final int count;
+		private final List<WorldChange> changes;
 		private final WorldEditHistoryTracker historyTracker;
-		private final int offset;
 		private final Location refPoint;
 
-		private Changer(final WorldChange[] changes, final Location refPoint, final WorldEditHistoryTracker historyTracker, final int offset, final int count){
+		private Changer(final List<WorldChange> changes, final Location refPoint, final WorldEditHistoryTracker historyTracker){
 			this.changes = changes;
 			this.refPoint = refPoint;
 			this.historyTracker = historyTracker;
-			this.offset = offset;
-			this.count = count;
 		}
 
 		@Override public void run(){
-			for(int i = offset; i < (offset + count); i++){
-				final WorldChange change = changes[i];
+			this.changes.forEach(change -> {
 				final Location changeLoc = refPoint.clone().add(change.location);
 				final int blockY = changeLoc.getBlockY();
 				ensureChunkLoaded(changeLoc.getChunk());
 				if((blockY <= 255) && (blockY >= 0)) {
 					if(historyTracker != null) {
 						historyTracker.recordHistoricChange(changeLoc, change.blockData);
+					} else {
+						// TODO: apply change without world edit
 					}
 				}
 				
-			}
+			});
 		}
 
 		private void ensureChunkLoaded(final Chunk chunk){
@@ -70,27 +72,20 @@ public class WorldChangeTracker{
 		}
 	}
 
-	private int BLOCKS_PER_TICK;
-	private final Map<WorldChangeKey, WorldChange> changes = new HashMap<>(10000);
+	private final int BLOCKS_PER_TICK;
+	private final Map<BlockVector, WorldChange> changes = new HashMap<>(10000);
 	private final Plugin plugin;
 
 	private final boolean recordHistory;
 
-	private int TICK_DELAY;
+	private final int TICK_DELAY;
 
 	public WorldChangeTracker(final Plugin plugin, final boolean recordHistory){
 		this.plugin = plugin;
 		this.recordHistory = recordHistory;
 
-		BLOCKS_PER_TICK = plugin.getConfig().getInt("BLOCKS_PER_TICK", 2500);
-		TICK_DELAY = plugin.getConfig().getInt("TICK_DELAY", 1);
-
-		if(BLOCKS_PER_TICK < 1) {
-			BLOCKS_PER_TICK = 1;
-		}
-		if(TICK_DELAY < 1) {
-			TICK_DELAY = 1;
-		}
+		this.BLOCKS_PER_TICK = Math.max(1, plugin.getConfig().getInt("BLOCKS_PER_TICK", 2500));
+		this.TICK_DELAY = Math.max(1, plugin.getConfig().getInt("TICK_DELAY", 1));
 	}
 
 	public void addChange(final Vector location, final BlockData blockData, final boolean overwrite){
@@ -98,39 +93,43 @@ public class WorldChangeTracker{
 	}
 
 	public void addChange(final WorldChange worldChange, final boolean overwrite){
-		final WorldChangeKey key = new WorldChangeKey(worldChange.location.getBlockX(), worldChange.location.getBlockY(), worldChange.location.getBlockZ());
-		if(changes.containsKey(key)) {
-			if(overwrite) changes.put(key, worldChange);
+		// manually create block vector, the Vector#toBlockVector implementation does not floor the values but rather casts them
+		// integer casting has different results than flooring for negative and positive numbers
+		final BlockVector key = new BlockVector(worldChange.location.getBlockX(), worldChange.location.getBlockY(),
+				worldChange.location.getBlockZ());
+		if(!changes.containsKey(key) || overwrite) {
+			changes.put(key, worldChange);
 		}
-		else changes.put(key, worldChange);
 	}
 
 	public void applyChanges(final Location refPoint, final Player byPlayer){
 		final WorldEditHistoryTracker historyTracker = Bukkit.getServer().getPluginManager().isPluginEnabled("WorldEdit")
 				? new WorldEditHistoryTracker(refPoint, byPlayer, recordHistory) : null;
 
-		final WorldChange[] changesArray = changes.values().toArray(new WorldChange[changes.values().size()]);
-		int i;
-		for(i = 0; ((i + 1) * BLOCKS_PER_TICK) < changesArray.length; i++){
-			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
-					new Changer(changesArray, refPoint, historyTracker, i * BLOCKS_PER_TICK, BLOCKS_PER_TICK), i * TICK_DELAY);
-		}
+		final AtomicInteger counter = new AtomicInteger();
 
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
-				new Changer(changesArray, refPoint, historyTracker, i * BLOCKS_PER_TICK, changesArray.length - (i * BLOCKS_PER_TICK)),
-				(i + 1) * TICK_DELAY);
+		changes.values().stream().collect(Collectors.groupingBy(it -> counter.getAndIncrement() / BLOCKS_PER_TICK)).forEach((i, l) ->
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Changer(l, refPoint, historyTracker), i * TICK_DELAY));
+
+		counter.set(counter.get() / BLOCKS_PER_TICK + 1);
 
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
 
-			@Override public void run(){
-				if(historyTracker != null) historyTracker.finalizeHistoricChanges();
+			@Override
+			public void run(){
+				if(historyTracker != null) {
+					historyTracker.finalizeHistoricChanges();
+				}
 			}
-		}, (i + 2) * TICK_DELAY);
+		}, counter.get() * TICK_DELAY);
 
 	}
 
-	public WorldChange getChange(final WorldChangeKey key){
-		return changes.get(key);
+	public boolean hasChangeAt(final BlockVector location, BlockFace direction){
+		location.add(direction.getDirection());
+		boolean result = changes.containsKey(location);
+		location.subtract(direction.getDirection());
+		return result;
 	}
 
 	public Collection<WorldChange> getChanges(){

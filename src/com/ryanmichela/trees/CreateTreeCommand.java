@@ -64,12 +64,12 @@ public class CreateTreeCommand implements CommandExecutor{
 			final Random seed = new Random(world.getSeed());
 
 			final String species = arg[0];
-			final File treeFile = new File(plugin.getDataFolder(), "resources/"+species + ".xml");
-			final File rootFile = new File(plugin.getDataFolder(), "resources/"+species + ".root.xml");
+			final File treeFile = new File(plugin.getDataFolder(), "resources/tree." + species.toUpperCase() + ".xml");
+			final File rootFile = new File(plugin.getDataFolder(), "resources/tree." + species.toUpperCase() + ".root.xml");
 
 			if(!treeFile.exists()) {
 				sender.sendMessage(ChatColor.RED + "Tree " + species + " does not exist.");
-				sender.sendMessage("Use \"/tree-edit " + species + "\" from the server console to create it.");
+				sender.sendMessage("Use \"/tree-edit tree." + species + "\" from the server console to create it.");
 				return true;
 			}
 

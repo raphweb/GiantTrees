@@ -20,52 +20,33 @@ package com.ryanmichela.trees.rendering;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockVector;
 
 public class JungleVinePopulator{
 
 	public static void populate(final WorldChangeTracker tracker, final Random r){
-		final WorldChangeKey north = new WorldChangeKey();
-		final WorldChangeKey south = new WorldChangeKey();
-		final WorldChangeKey east = new WorldChangeKey();
-		final WorldChangeKey west = new WorldChangeKey();
+		final BlockVector location = new BlockVector();
 
 		final List<WorldChange> newChanges = new LinkedList<>();
 
 		for(final WorldChange change : tracker.getChanges()){
 			if((change.blockData.getMaterial() == Material.OAK_WOOD) || (change.blockData.getMaterial() == Material.JUNGLE_WOOD)) {
-				north.x = change.location.getBlockX();
-				north.y = change.location.getBlockY();
-				north.z = change.location.getBlockZ() - 1;
-				south.x = change.location.getBlockX();
-				south.y = change.location.getBlockY();
-				south.z = change.location.getBlockZ() + 1;
-				east.x = change.location.getBlockX() + 1;
-				east.y = change.location.getBlockY();
-				east.z = change.location.getBlockZ();
-				west.x = change.location.getBlockX() - 1;
-				west.y = change.location.getBlockY();
-				west.z = change.location.getBlockZ();
-
-				if((r.nextInt(3) > 0) && (tracker.getChange(north) == null)) {
-					newChanges.add(new WorldChange(north.toVector(), Bukkit.createBlockData(Material.VINE, "[south=true]")));
-				}
-				if((r.nextInt(3) > 0) && (tracker.getChange(south) == null)) {
-					newChanges.add(new WorldChange(south.toVector(), Bukkit.createBlockData(Material.VINE, "[north=true]")));
-				}
-				if((r.nextInt(3) > 0) && (tracker.getChange(east) == null)) {
-					newChanges.add(new WorldChange(east.toVector(), Bukkit.createBlockData(Material.VINE, "[west=true]")));
-				}
-				if((r.nextInt(3) > 0) && (tracker.getChange(west) == null)) {
-					newChanges.add(new WorldChange(west.toVector(), Bukkit.createBlockData(Material.VINE, "[east=true]")));
-				}
+				location.setX(change.location.getBlockX());
+				location.setY(change.location.getBlockY());
+				location.setZ(change.location.getBlockZ());
+				Stream.of(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST).forEach(direction -> {
+					if ((r.nextInt(3) > 0) && (!tracker.hasChangeAt(location, direction))) {
+						newChanges.add(new WorldChange(location.clone().add(direction.getDirection()),
+								Bukkit.createBlockData(Material.VINE, "[" + direction.getOppositeFace().name().toLowerCase() + "=true]")));
+					}
+				});
 			}
 		}
-
-		for(final WorldChange newChange : newChanges){
-			tracker.addChange(newChange, false);
-		}
+		newChanges.forEach(change -> tracker.addChange(change, false));
 	}
 }

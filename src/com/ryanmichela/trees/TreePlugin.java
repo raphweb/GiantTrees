@@ -63,7 +63,7 @@ public class TreePlugin extends JavaPlugin{
 		if(!getDataFolder().exists()) saveDefaultConfig();
 
 		// unpack basic trees
-		Stream.of("BIRCH_FOREST", "FOREST", "JUNGLE", "ROOFED_FOREST", "SAVANNA", "TAIGA").forEach(biome -> ensureTreeFileExists("biome." + biome));
+		Stream.of("BIRCH_FOREST", "FOREST", "JUNGLE", "DARK_FOREST", "SAVANNA", "TAIGA").forEach(biome -> ensureTreeFileExists("biome." + biome));
 		Stream.of("ACACIA", "BIRCH", "DARK_OAK", "JUNGLE", "OAK", "SPRUCE").forEach(tree -> ensureTreeFileExists("tree." + tree));
 	}
 

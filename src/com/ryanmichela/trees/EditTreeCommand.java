@@ -76,7 +76,7 @@ public class EditTreeCommand implements CommandExecutor{
 			});
 
 			final String gtPluginName = gtPlugin[0].getAbsolutePath();
-			final String toOpen = new File(plugin.getDataFolder(), arg[0] + ".xml").getAbsolutePath();
+			final String toOpen = new File(plugin.getDataFolder(), "resources/" + arg[0] + ".xml").getAbsolutePath();
 			final ProcessBuilder pb = new ProcessBuilder("javaw", "-jar", gtPluginName, toOpen);
 			pb.start();
 			sender.sendMessage("Loading " + arg[0] + "...");

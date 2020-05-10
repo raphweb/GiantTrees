@@ -29,6 +29,6 @@ public class TreeType{
 	public TreeType(final String treeType){
 		// "Oak","Spruce","Birch","Jungle","Acacia","Dark Oak"
 		woodMaterial = Bukkit.createBlockData(Material.matchMaterial(treeType + " Wood"), "[axis=y]");
-		leafMaterial = Bukkit.createBlockData(Material.matchMaterial(treeType + " Leaves"));
+		leafMaterial = Bukkit.createBlockData(Material.matchMaterial(treeType + " Leaves"), "[persistent=true]");
 	}
 }

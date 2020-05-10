@@ -138,9 +138,9 @@ public class PhysicalCraftingRecipe{
 	}
 	
 	private boolean allRowPass(final boolean xInverted, final boolean zInverted, final Block lastPlaced, final int x, final int y, final int z) {
-		final IntStream pxStream = IntStream.range(0, pattern.size()       ).map(i -> xInverted ? pattern.size()        - i - 1 : i);
-		final IntStream pzStream = IntStream.range(0, pattern.get(0).size()).map(i -> zInverted ? pattern.get(0).size() - i - 1 : i);
-		return pxStream.allMatch(px -> pzStream.allMatch(pz -> {
+		final int[] pxIndices = IntStream.range(0, pattern.size()       ).map(i -> xInverted ? pattern.size()        - i - 1 : i).toArray();
+		final int[] pzIndices = IntStream.range(0, pattern.get(0).size()).map(i -> zInverted ? pattern.get(0).size() - i - 1 : i).toArray();
+		return IntStream.of(pxIndices).allMatch(px -> IntStream.of(pzIndices).allMatch(pz -> {
 			final Block b = lastPlaced.getWorld().getBlockAt(x + px, y, z + pz);
 			// current block data considered at pattern position px, pz
 			final Set<BlockData> cp = pattern.get(px).get(pz);

@@ -27,18 +27,16 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockType;
 
 public class WorldEditHistoryTracker{
 
 	private final EditSession activeEditSession;
 	private final Player forPlayer;
 	private final NoChangeBukkitWorld localWorld;
-	private final WorldEditPlugin wePlugin;
 	private final boolean enableUndo;
 
 	public WorldEditHistoryTracker(final Location refPoint, final Player forPlayer, final boolean enableUndo){
@@ -46,53 +44,31 @@ public class WorldEditHistoryTracker{
 		if(plugin == null) {
 			throw new IllegalStateException("WorldEdit not loaded. Cannot create WorldEditHistoryTracker");
 		}
-		wePlugin = (WorldEditPlugin)plugin;
 
-		localWorld = new NoChangeBukkitWorld(refPoint.getWorld());
-		// No public alternative
-		//EditSessionFactory esf = new EditSessionFactory();
-		//final EditSession es = esf.getEditSession(localWorld, Integer.MAX_VALUE);
+		this.localWorld = new NoChangeBukkitWorld(refPoint.getWorld());
 		final EditSession es = WorldEdit.getInstance().getEditSessionFactory()
 				.getEditSession(new NoChangeBukkitWorld(refPoint.getWorld()), -1);
-		activeEditSession = es;
-		//activeEditSession.enableStandardMode();
-		//activeEditSession.setMask((com.sk89q.worldedit.function.mask.Mask)null);
-		//activeEditSession.setFastMode(true);
+		this.activeEditSession = es;
 		this.forPlayer = forPlayer;
 		this.enableUndo = enableUndo;
 	}
 
 	public void finalizeHistoricChanges(){
-		final BukkitPlayer localPlayer = new BukkitPlayer(wePlugin, forPlayer);
-		final LocalSession localSession = wePlugin.getWorldEdit().getSessionManager().get(localPlayer);
-		activeEditSession.flushSession();
-		localSession.remember(activeEditSession);
 		if (enableUndo) {
+			final BukkitPlayer localPlayer = BukkitAdapter.adapt(forPlayer);
+			final LocalSession localSession = WorldEdit.getInstance().getSessionManager().get(localPlayer);
+			activeEditSession.flushSession();
+			localSession.remember(activeEditSession);
 			localWorld.enableUndo();
+		} else {
+			activeEditSession.flushSession();
 		}
-	}
-
-	public int getBlockChangeCount(){
-		return activeEditSession.getBlockChangeCount();
-	}
-
-	public int getSize(){
-		return activeEditSession.size();
 	}
 
 	public void recordHistoricChange(final Location changeLoc, final BlockData blockData){
 		try{
-			final BlockVector3 weVector = BlockVector3.at(
-					changeLoc.getBlockX(), changeLoc.getBlockY(), changeLoc.getBlockZ());
-			final BlockType weType = new BlockType(blockData.getMaterial().name().toLowerCase());
-			final BlockState weState = weType.getDefaultState();
-			//Property<?> axisProp = weType.getPropertyMap().getOrDefault("axis", null);
-			//if (axisProp != null) {
-			//	EnumProperty axisEnumProp = (EnumProperty)axisProp;
-			//	String currentAxisValue = weState.getState(axisEnumProp);
-			//	if (!currentAxisValue.equals("y"))
-			//		weState = weState.with(axisEnumProp, "y");
-			//}
+			final BlockVector3 weVector = BukkitAdapter.asBlockVector(changeLoc);
+			final BlockState weState = BukkitAdapter.adapt(blockData);
 			activeEditSession.setBlock(weVector, weState.toBaseBlock());
 		}
 		catch(final MaxChangedBlocksException e){

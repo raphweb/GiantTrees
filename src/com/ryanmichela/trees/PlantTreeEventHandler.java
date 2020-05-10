@@ -89,8 +89,8 @@ public class PlantTreeEventHandler implements Listener{
 
 		final String treeType = getTreeName(clickedBlock.getType());
 		final Random seed = new Random(clickedBlock.getWorld().getSeed());
-		final File treeFile = new File(plugin.getDataFolder(), "tree." + treeType + ".xml");
-		final File rootFile = new File(plugin.getDataFolder(), "tree." + treeType + ".root.xml");
+		final File treeFile = new File(plugin.getDataFolder(), "resources/tree." + treeType + ".xml");
+		final File rootFile = new File(plugin.getDataFolder(), "resources/tree." + treeType + ".root.xml");
 		evt.setCancelled(true);
 		if(itemInHand.getAmount()-15 <= 0) itemInHand = new ItemStack(Material.AIR);
 		else itemInHand.setAmount(itemInHand.getAmount()-boneMealConsumed);
