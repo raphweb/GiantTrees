@@ -72,7 +72,7 @@ public class Draw3d{
 						changeTracker.addChange(
 								new Vector(centerPoint.getBlockX(), (l1.getBlockY() - centerPoint.getBlockY()) + p.p,
 										(l1.getBlockZ() - centerPoint.getBlockZ()) + p.q),
-								treeType.woodMaterial, (byte)0, true);
+								treeType.woodMaterial, true);
 					}
 					break;
 				case yMajor:
@@ -81,7 +81,7 @@ public class Draw3d{
 						changeTracker.addChange(
 								new Vector((l1.getBlockX() - centerPoint.getBlockX()) + p.p, centerPoint.getBlockY(),
 										(l1.getBlockZ() - centerPoint.getBlockZ()) + p.q),
-								treeType.woodMaterial, (byte)0, true);
+								treeType.woodMaterial, true);
 					}
 					break;
 				case zMajor:
@@ -91,7 +91,7 @@ public class Draw3d{
 								.addChange(
 										new Vector((l1.getBlockX() - centerPoint.getBlockX()) + p.p, (l1.getBlockY() - centerPoint.getBlockY()) + p.q,
 												centerPoint.getBlockZ()),
-										treeType.woodMaterial, (byte)0, true);
+										treeType.woodMaterial, true);
 					}
 					break;
 			}
@@ -100,19 +100,19 @@ public class Draw3d{
 
 	public void drawLeafCluster(final Vector pos, final double length, final double width){
 		for(final Vector loc : plotEllipsoid(pos, length, width, length, 0)){
-			changeTracker.addChange(loc, treeType.leafMaterial, (byte)0, false);
+			changeTracker.addChange(loc, treeType.leafMaterial, false);
 		}
 	}
 
 	public void drawRootJunction(final Vector pos, final double r){
 		for(final Vector loc : plotDownwardHemisphere(pos, r)){
-			changeTracker.addChange(loc, treeType.woodMaterial, (byte)0, true);
+			changeTracker.addChange(loc, treeType.woodMaterial, true);
 		}
 	}
 
-	public void drawWoodSphere(final Vector pos, final double r, final byte data, final int level){
+	public void drawWoodSphere(final Vector pos, final double r, final int level){
 		for(final Vector loc : plotSphere(pos, r, level)){
-			changeTracker.addChange(loc, treeType.woodMaterial, data, true);
+			changeTracker.addChange(loc, treeType.woodMaterial, true);
 		}
 	}
 

@@ -46,7 +46,7 @@ public class MinecraftSegmentExporter extends DefaultStemTraversal{
 			this.d3d.drawCone(l1, ss1.rad, l2, ss2.rad, level);
 
 			if(l1.subtract(l2).length() > 1) {
-				this.d3d.drawWoodSphere(l2, ss2.rad, (byte)0, level);
+				this.d3d.drawWoodSphere(l2, ss2.rad, level);
 			}
 		}
 

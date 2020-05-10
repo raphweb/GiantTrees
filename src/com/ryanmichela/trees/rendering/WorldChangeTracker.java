@@ -20,13 +20,15 @@ package com.ryanmichela.trees.rendering;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+
 import com.ryanmichela.trees.history.WorldEditHistoryTracker;
 
 public class WorldChangeTracker{
@@ -54,9 +56,10 @@ public class WorldChangeTracker{
 				ensureChunkLoaded(changeLoc.getChunk());
 				if((blockY <= 255) && (blockY >= 0)) {
 					if(historyTracker != null) {
-						historyTracker.recordHistoricChange(changeLoc, change.material, change.data);
+						historyTracker.recordHistoricChange(changeLoc, change.blockData);
 					}
 				}
+				
 			}
 		}
 
@@ -90,8 +93,8 @@ public class WorldChangeTracker{
 		}
 	}
 
-	public void addChange(final Vector location, final Material material, final byte data, final boolean overwrite){
-		addChange(new WorldChange(location, material, data), overwrite);
+	public void addChange(final Vector location, final BlockData blockData, final boolean overwrite){
+		addChange(new WorldChange(location, blockData), overwrite);
 	}
 
 	public void addChange(final WorldChange worldChange, final boolean overwrite){
@@ -103,8 +106,8 @@ public class WorldChangeTracker{
 	}
 
 	public void applyChanges(final Location refPoint, final Player byPlayer){
-		final WorldEditHistoryTracker historyTracker = (recordHistory && Bukkit.getServer().getPluginManager().isPluginEnabled("WorldEdit"))
-				? new WorldEditHistoryTracker(refPoint, byPlayer) : null;
+		final WorldEditHistoryTracker historyTracker = Bukkit.getServer().getPluginManager().isPluginEnabled("WorldEdit")
+				? new WorldEditHistoryTracker(refPoint, byPlayer, recordHistory) : null;
 
 		final WorldChange[] changesArray = changes.values().toArray(new WorldChange[changes.values().size()]);
 		int i;

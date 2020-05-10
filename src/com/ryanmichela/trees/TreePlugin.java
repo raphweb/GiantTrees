@@ -18,11 +18,12 @@
 package com.ryanmichela.trees;
 
 import java.io.File;
+import java.util.stream.Stream;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.google.common.collect.ImmutableList;
 
 public class TreePlugin extends JavaPlugin{
 
@@ -62,12 +63,8 @@ public class TreePlugin extends JavaPlugin{
 		if(!getDataFolder().exists()) saveDefaultConfig();
 
 		// unpack basic trees
-		for(final String biome : ImmutableList.of("BIRCH_FOREST", "FOREST", "JUNGLE", "ROOFED_FOREST", "SAVANNA", "TAIGA")){
-			ensureTreeFileExists("biome." + biome);
-		}
-		for(final String tree : ImmutableList.of("ACACIA", "BIRCH", "DARK_OAK", "JUNGLE", "OAK", "SPRUCE")){
-			ensureTreeFileExists("tree." + tree);
-		}
+		Stream.of("BIRCH_FOREST", "FOREST", "JUNGLE", "ROOFED_FOREST", "SAVANNA", "TAIGA").forEach(biome -> ensureTreeFileExists("biome." + biome));
+		Stream.of("ACACIA", "BIRCH", "DARK_OAK", "JUNGLE", "OAK", "SPRUCE").forEach(tree -> ensureTreeFileExists("tree." + tree));
 	}
 
 	private void ensureTreeFileExists(String filePrefix){

@@ -19,11 +19,12 @@ planting-pattern:
         - SSESS
         - SSSSS
         - SSSSS
-    # Each unique character in the pattern must have one material mapping.
+    # Each unique character in the pattern must have at least one material mapping.
+    # Multiple material mappings can be concatenated via , (their disjunction will be considered).
     # The pattern must contain at least one sapling.
     materials:
-        S: SAPLING
-        E: EMERALD_BLOCK
+        S: acacia_sapling,birch_sapling,dark_oak_sapling,jungle_sapling,oak_sapling,spruce_sapling
+        E: emerald_block
     # Fertilizing the tree consumes some number of bone meal.
     bone-meal-consumed: 64
 

@@ -18,10 +18,11 @@
 package com.ryanmichela.trees;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -33,46 +34,48 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+
 import com.ryanmichela.trees.rendering.TreeRenderer;
 
 public class PlantTreeEventHandler implements Listener{
 
-	private int boneMealConsumed;
-	private boolean enabled;
+	private final int boneMealConsumed;
+	private final boolean enabled;
 	private final Plugin plugin;
-	private PhysicalCraftingRecipe recipe;
+	private final PhysicalCraftingRecipe recipe;
 	private final TreeRenderer renderer;
 
 	public PlantTreeEventHandler(final Plugin pl){
-		plugin = pl;
-		renderer = new TreeRenderer(plugin);
-
+		this.plugin = pl;
+		this.renderer = new TreeRenderer(this.plugin);
+		boolean enabled = false;
+		int boneMealConsumed = 0;
+		PhysicalCraftingRecipe recipe = null;
+		
 		try{
 			// Read the raw config
-			final ConfigurationSection patternSection = plugin.getConfig().getConfigurationSection("planting-pattern");
+			final ConfigurationSection patternSection = this.plugin.getConfig().getConfigurationSection("planting-pattern");
 			final List<String> rows = patternSection.getStringList("pattern");
 			final ConfigurationSection materialsSection = patternSection.getConfigurationSection("materials");
 			final Map<String, Object> configMaterialMap = materialsSection.getValues(false);
 
-			final Map<Character, String> materialDataMap = new HashMap<>();
-			for(final Map.Entry<String, Object> kvp : configMaterialMap.entrySet()){
-				materialDataMap.put(kvp.getKey().charAt(0), (String)kvp.getValue());
-			}
+			final Map<Character, String> materialDataMap = configMaterialMap.entrySet().stream()
+					.collect(Collectors.toMap(k -> k.getKey().charAt(0), v -> (String)v.getValue()));
 
 			boneMealConsumed = patternSection.getInt("bone-meal-consumed");
 
-			recipe = PhysicalCraftingRecipe.fromStringRepresentation(rows.toArray(new String[]{}), materialDataMap);
-			if(!recipe.usedMaterials.contains(Material.OAK_SAPLING)) {
-				throw new Exception();
-			}
+			recipe = PhysicalCraftingRecipe.fromStringRepresentation(rows, materialDataMap);
 
 			enabled = true;
 		}
 		catch(final Exception e){
-			plugin.getLogger().severe("The planting-pattern config section is invalid! "
+			this.plugin.getLogger().severe(e.getLocalizedMessage());
+			this.plugin.getLogger().severe("The planting-pattern config section is invalid! "
 					+ "Disabling survival planting of giant trees.");
-			enabled = false;
 		}
+		this.enabled = enabled;
+		this.boneMealConsumed = boneMealConsumed;
+		this.recipe = recipe;
 	}
 
 	@EventHandler public void onPlayerInteract(final PlayerInteractEvent evt){
@@ -100,7 +103,7 @@ public class PlantTreeEventHandler implements Listener{
 		renderer.renderTree(clickedBlock.getLocation(), treeFile, rootFile, seed.nextInt(), true);
 	}
 
-	private String getTreeName(final Material treeType){
+	private static String getTreeName(final Material treeType){
 		switch(treeType){
 			case OAK_SAPLING:
 				return "OAK";

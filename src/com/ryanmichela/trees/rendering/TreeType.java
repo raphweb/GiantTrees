@@ -17,50 +17,18 @@
  */
 package com.ryanmichela.trees.rendering;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 
 public class TreeType{
 
-//	public byte dataOffset;
-	public Material leafMaterial;
-	public Material woodMaterial;
+	public final BlockData leafMaterial;
+	public final BlockData woodMaterial;
 
 	public TreeType(final String treeType){
 		// "Oak","Spruce","Birch","Jungle","Acacia","Dark Oak"
-		if(treeType.equals("Oak")) {
-			woodMaterial = Material.OAK_LOG;
-			leafMaterial = Material.OAK_LEAVES;
-//			dataOffset = 0;
-		}
-		else if(treeType.equals("Spruce")) {
-			woodMaterial = Material.SPRUCE_LOG;
-			leafMaterial = Material.SPRUCE_LEAVES;
-//			dataOffset = 1;
-		}
-		else if(treeType.equals("Birch")) {
-			woodMaterial = Material.BIRCH_LOG;
-			leafMaterial = Material.BIRCH_LEAVES;
-//			dataOffset = 2;
-		}
-		else if(treeType.equals("Jungle")) {
-			woodMaterial = Material.JUNGLE_LOG;
-			leafMaterial = Material.JUNGLE_LEAVES;
-//			dataOffset = 3;
-		}
-		else if(treeType.equals("Acacia")) {
-			woodMaterial = Material.ACACIA_LOG;
-			leafMaterial = Material.ACACIA_LEAVES;
-//			dataOffset = 0;
-		}
-		else if(treeType.equals("Dark Oak")) {
-			woodMaterial = Material.DARK_OAK_LOG;
-			leafMaterial = Material.DARK_OAK_LEAVES;
-//			dataOffset = 1;
-		}
-		else{
-			woodMaterial = Material.OAK_LOG;
-			leafMaterial = Material.OAK_LEAVES;
-//			dataOffset = 0;
-		}
+		woodMaterial = Bukkit.createBlockData(Material.matchMaterial(treeType + " Wood"), "[axis=y]");
+		leafMaterial = Bukkit.createBlockData(Material.matchMaterial(treeType + " Leaves"));
 	}
 }

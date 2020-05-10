@@ -17,18 +17,16 @@
  */
 package com.ryanmichela.trees.rendering;
 
-import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.util.Vector;
 
 class WorldChange{
 
-	public Material material;
-	public byte data;
-	Vector location;
+	public final BlockData blockData;
+	final Vector location;
 
-	WorldChange(final Vector location, final Material material, final byte data){
+	WorldChange(final Vector location, final BlockData material){
 		this.location = location;
-		this.material = material;
-		this.data = data;
+		this.blockData = material;
 	}
 }

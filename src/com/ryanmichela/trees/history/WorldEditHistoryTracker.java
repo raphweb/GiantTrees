@@ -19,9 +19,10 @@ package com.ryanmichela.trees.history;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.Material;
+
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -38,8 +39,9 @@ public class WorldEditHistoryTracker{
 	private final Player forPlayer;
 	private final NoChangeBukkitWorld localWorld;
 	private final WorldEditPlugin wePlugin;
+	private final boolean enableUndo;
 
-	public WorldEditHistoryTracker(final Location refPoint, final Player forPlayer){
+	public WorldEditHistoryTracker(final Location refPoint, final Player forPlayer, final boolean enableUndo){
 		final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
 		if(plugin == null) {
 			throw new IllegalStateException("WorldEdit not loaded. Cannot create WorldEditHistoryTracker");
@@ -57,6 +59,7 @@ public class WorldEditHistoryTracker{
 		//activeEditSession.setMask((com.sk89q.worldedit.function.mask.Mask)null);
 		//activeEditSession.setFastMode(true);
 		this.forPlayer = forPlayer;
+		this.enableUndo = enableUndo;
 	}
 
 	public void finalizeHistoricChanges(){
@@ -64,7 +67,9 @@ public class WorldEditHistoryTracker{
 		final LocalSession localSession = wePlugin.getWorldEdit().getSessionManager().get(localPlayer);
 		activeEditSession.flushSession();
 		localSession.remember(activeEditSession);
-		localWorld.enableUndo();
+		if (enableUndo) {
+			localWorld.enableUndo();
+		}
 	}
 
 	public int getBlockChangeCount(){
@@ -75,12 +80,19 @@ public class WorldEditHistoryTracker{
 		return activeEditSession.size();
 	}
 
-	public void recordHistoricChange(final Location changeLoc, final Material material, final byte data){
+	public void recordHistoricChange(final Location changeLoc, final BlockData blockData){
 		try{
 			final BlockVector3 weVector = BlockVector3.at(
 					changeLoc.getBlockX(), changeLoc.getBlockY(), changeLoc.getBlockZ());
-			BlockType weType = new BlockType(material.name().toLowerCase());
-			BlockState weState = weType.getDefaultState();
+			final BlockType weType = new BlockType(blockData.getMaterial().name().toLowerCase());
+			final BlockState weState = weType.getDefaultState();
+			//Property<?> axisProp = weType.getPropertyMap().getOrDefault("axis", null);
+			//if (axisProp != null) {
+			//	EnumProperty axisEnumProp = (EnumProperty)axisProp;
+			//	String currentAxisValue = weState.getState(axisEnumProp);
+			//	if (!currentAxisValue.equals("y"))
+			//		weState = weState.with(axisEnumProp, "y");
+			//}
 			activeEditSession.setBlock(weVector, weState.toBaseBlock());
 		}
 		catch(final MaxChangedBlocksException e){

@@ -20,6 +20,8 @@ package com.ryanmichela.trees.rendering;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 public class JungleVinePopulator{
@@ -33,7 +35,7 @@ public class JungleVinePopulator{
 		final List<WorldChange> newChanges = new LinkedList<>();
 
 		for(final WorldChange change : tracker.getChanges()){
-			if((change.material == Material.OAK_LOG) || (change.material == Material.DARK_OAK_LOG)) {
+			if((change.blockData.getMaterial() == Material.OAK_WOOD) || (change.blockData.getMaterial() == Material.JUNGLE_WOOD)) {
 				north.x = change.location.getBlockX();
 				north.y = change.location.getBlockY();
 				north.z = change.location.getBlockZ() - 1;
@@ -48,16 +50,16 @@ public class JungleVinePopulator{
 				west.z = change.location.getBlockZ();
 
 				if((r.nextInt(3) > 0) && (tracker.getChange(north) == null)) {
-					newChanges.add(new WorldChange(north.toVector(), Material.VINE, (byte)1));
+					newChanges.add(new WorldChange(north.toVector(), Bukkit.createBlockData(Material.VINE, "[south=true]")));
 				}
 				if((r.nextInt(3) > 0) && (tracker.getChange(south) == null)) {
-					newChanges.add(new WorldChange(south.toVector(), Material.VINE, (byte)4));
+					newChanges.add(new WorldChange(south.toVector(), Bukkit.createBlockData(Material.VINE, "[north=true]")));
 				}
 				if((r.nextInt(3) > 0) && (tracker.getChange(east) == null)) {
-					newChanges.add(new WorldChange(east.toVector(), Material.VINE, (byte)2));
+					newChanges.add(new WorldChange(east.toVector(), Bukkit.createBlockData(Material.VINE, "[west=true]")));
 				}
 				if((r.nextInt(3) > 0) && (tracker.getChange(west) == null)) {
-					newChanges.add(new WorldChange(west.toVector(), Material.VINE, (byte)8));
+					newChanges.add(new WorldChange(west.toVector(), Bukkit.createBlockData(Material.VINE, "[east=true]")));
 				}
 			}
 		}
