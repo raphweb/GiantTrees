@@ -117,8 +117,8 @@ public final class Workplace{
 	final static ImageIcon aboutIcon = createImageIcon("images/arbaro64.png", "Arbaro");
 
 	/** Returns an ImageIcon, or null if the path was invalid. */
-	protected static ImageIcon createImageIcon(String path, String description){
-		java.net.URL imgURL = Workplace.class.getResource(path);
+	public static ImageIcon createImageIcon(String path, String description){
+		java.net.URL imgURL = Workplace.class.getClassLoader().getResource(path);
 		if(imgURL != null) {
 			return new ImageIcon(imgURL, description);
 		}
@@ -143,7 +143,7 @@ public final class Workplace{
 			}
 		});
 		// set Icon
-		java.net.URL imgURL = Workplace.class.getResource("images/arbaro32.png");
+		java.net.URL imgURL = Workplace.class.getClassLoader().getResource("images/arbaro32.png");
 		if(imgURL != null) {
 			Image icon = Toolkit.getDefaultToolkit().getImage(imgURL);
 			frame.setIconImage(icon);

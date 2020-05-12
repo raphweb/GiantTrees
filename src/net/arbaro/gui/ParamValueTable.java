@@ -182,18 +182,6 @@ public final class ParamValueTable extends JPanel {
 
 		ImageIcon [] shapeIcons;
 		
-		/** Returns an ImageIcon, or null if the path was invalid. */
-		protected ImageIcon createImageIcon(String path,
-				String description) {
-			java.net.URL imgURL = ShapeBox.class.getResource(path);
-			if (imgURL != null) {
-				return new ImageIcon(imgURL, description);
-			} else {
-				System.err.println("Couldn't find file: " + path);
-				return null;
-			}
-		}
-		
 		@SuppressWarnings("unchecked") public ShapeBox(ParamValueTable pnt) {
 			super();
 //			parent = pnt;
@@ -207,7 +195,7 @@ public final class ParamValueTable extends JPanel {
 			shapeIcons = new ImageIcon[items.length];
 			for (int i=0; i<items.length; i++) {
 				// values[i] = new Integer(i);
-				shapeIcons[i] = createImageIcon("images/shape"+i+".png",items[i]);
+				shapeIcons[i] = Workplace.createImageIcon("images/shape"+i+".png",items[i]);
 				addItem(Integer.toString(i));
 			}
 		}

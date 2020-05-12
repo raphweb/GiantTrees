@@ -4,7 +4,7 @@
     <options buildIfNeeded="true" compress="true" descriptionLocation="/GiantTrees/build.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+    <manifest generateManifest="true" mainClassHandleIdentifier="=GiantTrees/src&lt;net.arbaro{arbaro_gui.java[arbaro_gui" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
         <sealing sealJar="false">
             <packagesToSeal/>
             <packagesToUnSeal/>
@@ -15,7 +15,7 @@
         <file path="/GiantTrees/NOTICE"/>
         <file path="/GiantTrees/config.yml"/>
         <javaElement handleIdentifier="=GiantTrees/src"/>
-        <folder path="/GiantTrees/resources"/>
+        <javaElement handleIdentifier="=GiantTrees/resources"/>
         <file path="/GiantTrees/plugin.yml"/>
     </selectedElements>
 </jardesc>
