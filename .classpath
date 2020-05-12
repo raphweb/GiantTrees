@@ -7,6 +7,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/GiantTrees/lib/bukkit-1.15.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/worldedit-bukkit-7.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/worldedit-core-7.1.0.jar" sourcepath="lib/worldedit-core-7.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/worldedit-bukkit-7.1.0.jar" sourcepath="lib/worldedit-bukkit-7.1.0-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
