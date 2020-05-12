@@ -12,10 +12,11 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
         <file path="/GiantTrees/LICENSE"/>
+        <javaElement handleIdentifier="=GiantTrees/resources\/gui"/>
+        <file path="/GiantTrees/plugin.yml"/>
         <file path="/GiantTrees/NOTICE"/>
         <file path="/GiantTrees/config.yml"/>
         <javaElement handleIdentifier="=GiantTrees/src"/>
-        <javaElement handleIdentifier="=GiantTrees/resources"/>
-        <file path="/GiantTrees/plugin.yml"/>
+        <folder path="/GiantTrees/resources"/>
     </selectedElements>
 </jardesc>
